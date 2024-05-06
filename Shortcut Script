@@ -1,0 +1,33 @@
+# Apps to make a shortcut for
+$apps = @(
+    @{ Name = "Microsoft Word"; Path = "C:\Program Files (x86)\Microsoft Office\root\Office16\WINWORD.EXE" },
+    @{ Name = "Microsoft Excel"; Path = "C:\Program Files (x86)\Microsoft Office\root\Office16\EXCEL.EXE" },
+    @{ Name = "Microsoft PowerPoint"; Path = "C:\Program Files (x86)\Microsoft Office\root\Office16\POWERPNT.EXE" }
+    # Add more applications as needed
+)
+
+$websites = @(
+    @{ Name = "Tech Support"; Path = "ENTERWEBSITE" ; IconPath = "ENTERICONLINK" } # You have to use an icon link otherwise it will show blank
+    # Add more webpages as needed    
+)
+
+# Specify the directory where you want to create shortcuts (Public directory on C drive)
+$shortcutDirectory = "C:\Users\Public\Desktop"
+
+# This will make it loop through the programs and allow it to make shortcuts for all
+foreach ($app in $apps) {
+    $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut("$shortcutDirectory\$($app['Name']).lnk")
+    $shortcut.TargetPath = $app['Path']
+    $shortcut.Save()
+}
+
+foreach ($website in $websites) {
+    $iconPath = "$shortcutDirectory\$($website['Name']).ico"
+    Invoke-WebRequest -Uri $website['IconPath'] -OutFile $iconPath
+    $shortcut = (New-Object -ComObject WScript.Shell).CreateShortcut("$shortcutDirectory\$($website['Name']).lnk")
+    $shortcut.TargetPath = $website['Path']
+    $shortcut.IconLocation = $iconPath
+    $shortcut.Save()
+}
+
+Write-Host "Shortcuts created successfully."
